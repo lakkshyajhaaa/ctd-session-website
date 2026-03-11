@@ -1,0 +1,187 @@
+// Session Attendance Management - Database Schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TRAINER
+  STUDENT
+}
+
+enum SessionType {
+  ONLINE
+  OFFLINE
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+enum UserStatus {
+  PENDING
+  APPROVED
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+}
+
+model User {
+  id              String      @id @default(cuid())
+  name            String
+  email           String      @unique
+  passwordHash    String      @map("password_hash")
+  role            Role        @default(STUDENT)
+  status          UserStatus  @default(APPROVED)
+  rollNumber      String?     @unique
+  organization    String?
+  invitedByAdmin  Boolean     @default(false) @map("invited_by_admin")
+  emailVerified   DateTime?   @map("email_verified")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  sessionsAsTrainer   Session[]           @relation("TrainerSessions")
+  sessionRegistrations SessionRegistration[]
+  attendances         Attendance[]
+  notes               Note[]
+  achievements        Achievement[]
+  studyLogs           StudyLog[]
+
+  @@map("users")
+}
+
+model TrainerInvite {
+  id              String       @id @default(cuid())
+  email           String       @unique
+  organization    String?
+  token           String       @unique
+  status          InviteStatus @default(PENDING)
+  createdAt       DateTime     @default(now()) @map("created_at")
+  expiresAt       DateTime     @map("expires_at")
+  createdByAdmin  Boolean      @default(true) @map("created_by_admin")
+
+  @@map("trainer_invites")
+}
+
+model Session {
+  id              String      @id @default(cuid())
+  trainerId       String      @map("trainer_id")
+  subject         String
+  topic           String
+  sessionType     SessionType @map("session_type") @default(ONLINE)
+  durationMinutes Int         @map("duration_minutes")
+  sessionDate     DateTime    @map("session_date")
+  attendanceOpen  Boolean     @default(false) @map("attendance_open")
+  createdAt       DateTime    @default(now()) @map("created_at")
+
+  trainer         User        @relation("TrainerSessions", fields: [trainerId], references: [id], onDelete: Cascade)
+  registrations   SessionRegistration[]
+  attendances     Attendance[]
+  attendanceCodes AttendanceCode[]
+  notes           Note[]
+  studyLogs       StudyLog[]
+
+  @@map("sessions")
+}
+
+model SessionRegistration {
+  id          String   @id @default(cuid())
+  sessionId   String   @map("session_id")
+  studentId   String   @map("student_id")
+  registeredAt DateTime @default(now()) @map("registered_at")
+
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student     User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, studentId])
+  @@map("session_registrations")
+}
+
+model Attendance {
+  id                 String           @id @default(cuid())
+  sessionId          String           @map("session_id")
+  studentId          String           @map("student_id")
+  status             AttendanceStatus @default(PRESENT)
+  timestamp          DateTime         @default(now())
+  verificationMethod String           @map("verification_method") // "CODE" | "MANUAL"
+
+  session            Session          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student            User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, studentId])
+  @@map("attendances")
+}
+
+model AttendanceCode {
+  id        String   @id @default(cuid())
+  sessionId String  @map("session_id")
+  codeHash  String  @map("code_hash")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("attendance_codes")
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  sessionId String  @map("session_id")
+  trainerId String  @map("trainer_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  trainer   User    @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@map("notes")
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  studentId   String   @map("student_id")
+  title       String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  student     User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("achievements")
+}
+
+model StudyLog {
+  id              String   @id @default(cuid())
+  studentId       String   @map("student_id")
+  sessionId       String   @map("session_id")
+  durationMinutes Int      @map("duration_minutes")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  student         User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  session         Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, sessionId])
+  @@map("study_logs")
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  type       String   // "VERIFY_EMAIL" | "RESET_PASSWORD"
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@unique([identifier, type])
+  @@map("verification_tokens")
+}
