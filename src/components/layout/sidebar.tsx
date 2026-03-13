@@ -16,6 +16,7 @@ import {
   Users,
   BarChart,
   LineChart,
+  Code,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -104,7 +105,14 @@ export function Sidebar() {
             );
           })}
         </nav>
-        <div className="border-t p-4">
+        <div className="border-t p-4 space-y-2">
+          <Link
+            href="/dashboard/team"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-900 dark:hover:text-neutral-300"
+          >
+            <Code className="h-5 w-5" />
+            Our Development Team
+          </Link>
           <Button
             variant="ghost"
             className="w-full justify-start gap-3"
