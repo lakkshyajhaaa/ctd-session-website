@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
 import { randomBytes } from "crypto";
 
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 
         // In a real application, you would send an email here using SendGrid/Resend
         // For this prototype, we'll return the invite link in the response
-        const inviteLink = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/invite/trainer?token=${token}`;
+        const inviteLink = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/register/trainer?token=${token}`;
 
         return NextResponse.json({
             message: "Invite generated successfully",

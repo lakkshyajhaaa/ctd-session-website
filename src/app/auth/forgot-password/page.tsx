@@ -254,7 +254,7 @@ export default function ForgotPasswordPage() {
                   <div className="space-y-3 mb-10 text-center">
                     <h2 className="text-3xl font-bold text-white tracking-tight">Forgot Password?</h2>
                     <p className="text-neutral-400 text-sm leading-relaxed">
-                      Enter your email address and we'll send you a 6-digit confirmation code to reset your password securely.
+                      Enter your email address and we&apos;ll send you a 6-digit confirmation code to reset your password securely.
                     </p>
                   </div>
 
@@ -297,7 +297,7 @@ export default function ForgotPasswordPage() {
                   <div className="space-y-3 mb-8">
                     <h2 className="text-2xl font-bold text-white tracking-tight">Enter Secure Code</h2>
                     <p className="text-neutral-400 text-sm leading-relaxed">
-                      We've dispatched a 6-digit security code to <span className="text-white font-medium">{email}</span>.
+                      We&apos;ve dispatched a 6-digit security code to <span className="text-white font-medium">{email}</span>.
                       Please enter it below along with your new password.
                     </p>
                   </div>

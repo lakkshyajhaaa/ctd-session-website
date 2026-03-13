@@ -222,7 +222,7 @@ export default function VerifyEmailPage() {
                             <div className="space-y-3 mb-10 text-center">
                                 <h2 className="text-3xl font-bold text-white tracking-tight">Verify your email</h2>
                                 <p className="text-neutral-400 text-sm leading-relaxed">
-                                    We've sent a 6-digit confirmation code to <span className="text-white font-medium">{session?.user?.email}</span>.
+                                    We&apos;ve sent a 6-digit confirmation code to <span className="text-white font-medium">{session?.user?.email}</span>.
                                 </p>
                             </div>
 
@@ -251,7 +251,7 @@ export default function VerifyEmailPage() {
 
                             <div className="mt-8 space-y-4">
                                 <p className="text-center text-sm text-neutral-400">
-                                    Didn't receive the email?{" "}
+                                    Didn&apos;t receive the email?{" "}
                                     <button
                                         type="button"
                                         onClick={handleResend}

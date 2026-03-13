@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 const trainerRegisterSchema = z.object({
@@ -9,6 +9,7 @@ const trainerRegisterSchema = z.object({
         .string()
         .min(8, "Password must be at least 8 characters")
         .regex(/[A-Z]/, "Password must contain at least one uppercase letter"),
+    organization: z.string().min(2, "Organization is required"),
     token: z.string().min(1, "Invite token is required"),
 });
 
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const { name, password, token } = result.data;
+        const { name, password, organization, token } = result.data;
 
         // 1. Verify Token
         const invite = await prisma.trainerInvite.findUnique({
@@ -50,15 +51,23 @@ export async function POST(req: NextRequest) {
                 passwordHash,
                 role: "TRAINER",
                 status: "APPROVED",
-                organization: invite.organization,
+                organization: organization || invite.organization,
                 invitedByAdmin: true,
+                teacherProfile: {
+                    create: {
+                        organization: organization || invite.organization,
+                    }
+                }
             },
         });
 
-        // 4. Mark Invite as ACCEPTED to lock replay attacks
+        // 4. Mark Invite as USED to lock replay attacks
         await prisma.trainerInvite.update({
             where: { id: invite.id },
-            data: { status: "ACCEPTED" },
+            data: { 
+                status: "USED",
+                usedAt: new Date()
+            },
         });
 
         return NextResponse.json({

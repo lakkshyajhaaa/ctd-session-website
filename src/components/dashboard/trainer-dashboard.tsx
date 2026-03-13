@@ -35,12 +35,6 @@ export function TrainerDashboard() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold tracking-tight">Trainer Dashboard</h2>
-        <Button asChild>
-          <Link href="/dashboard/sessions/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Create Session
-          </Link>
-        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -91,10 +85,7 @@ export function TrainerDashboard() {
           <CardContent>
             {upcomingSessions.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <p className="text-sm text-muted-foreground mb-4">No sessions yet. Create your first session to start tracking attendance.</p>
-                <Button asChild variant="default" size="sm">
-                  <Link href="/dashboard/sessions/new">Create Session</Link>
-                </Button>
+                <p className="text-sm text-muted-foreground mb-4">No sessions yet. You will see sessions here once assigned by an Admin.</p>
               </div>
             ) : (
               <div className="space-y-4">

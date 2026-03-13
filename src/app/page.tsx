@@ -291,7 +291,7 @@ export default function HomePage() {
 
                   <div className="mt-[24px] flex flex-col items-center gap-3">
                     <p className="text-center text-sm text-neutral-400">
-                      Don't have an account?{" "}
+                      Don&apos;t have an account?{" "}
                       <button
                         onClick={() => setAuthMode("register")}
                         className="text-purple-400 hover:text-purple-300 transition-colors focus:outline-none font-semibold"

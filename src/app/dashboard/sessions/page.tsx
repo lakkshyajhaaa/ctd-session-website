@@ -47,6 +47,7 @@ export default function SessionsPage() {
   const [isRegistering, setIsRegistering] = useState(false);
 
   const isTrainer = sessionData?.user?.role === Role.TRAINER || sessionData?.user?.role === Role.ADMIN;
+  const isAdmin = sessionData?.user?.role === Role.ADMIN;
   const isStudent = sessionData?.user?.role === Role.STUDENT;
 
   useEffect(() => {
@@ -181,7 +182,7 @@ export default function SessionsPage() {
             )}
           </div>
 
-          {isTrainer && (
+          {isAdmin && (
             <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
               <Link href="/dashboard/sessions/new">
                 <Plus className="mr-2 h-4 w-4" />
@@ -298,7 +299,7 @@ export default function SessionsPage() {
           title="No sessions found"
           description={isStudent ? "There are no sessions matching this filter criteria." : "Create your first session to start tracking attendance."}
           action={
-            isTrainer ? (
+            isAdmin ? (
               <Button asChild>
                 <Link href="/dashboard/sessions/new">Create Session</Link>
               </Button>

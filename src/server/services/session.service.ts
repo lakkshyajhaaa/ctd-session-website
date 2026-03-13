@@ -2,14 +2,14 @@ import { prisma } from "@/lib/prisma";
 import { SessionType } from "@prisma/client";
 import { CreateSessionInput } from "@/lib/validations/session";
 
-export async function createSession(trainerId: string, data: CreateSessionInput) {
+export async function createSession(data: CreateSessionInput) {
   const sessionDate = typeof data.sessionDate === "string"
     ? new Date(data.sessionDate)
     : data.sessionDate;
 
   return prisma.session.create({
     data: {
-      trainerId,
+      trainerId: data.trainerId,
       subject: data.subject,
       topic: data.topic,
       sessionType: (data.sessionType as SessionType) || SessionType.ONLINE,

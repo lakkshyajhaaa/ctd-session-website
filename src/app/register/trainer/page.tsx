@@ -44,43 +44,13 @@ export default async function InviteTrainerPage({ searchParams }: { searchParams
 
     const invite = await prisma.trainerInvite.findUnique({ where: { token } });
 
-    if (!invite) {
+    if (!invite || invite.status !== "PENDING" || invite.expiresAt < new Date()) {
         return (
             <PageWrapper>
                 <div className="text-center space-y-4">
                     <XCircle className="mx-auto h-12 w-12 text-red-500" />
-                    <h2 className="text-xl font-bold text-white">Invalid Invitation</h2>
-                    <p className="text-sm text-neutral-400">The token provided does not match any existing invitations.</p>
-                    <div className="pt-4">
-                        <Link href="/" className="text-purple-400 hover:text-purple-300">Return to Portal</Link>
-                    </div>
-                </div>
-            </PageWrapper>
-        );
-    }
-
-    if (invite.status === "ACCEPTED") {
-        return (
-            <PageWrapper>
-                <div className="text-center space-y-4">
-                    <CheckCircle2 className="mx-auto h-12 w-12 text-green-500" />
-                    <h2 className="text-xl font-bold text-white">Already Registered</h2>
-                    <p className="text-sm text-neutral-400">This invitation has already been claimed. Your trainer account is active.</p>
-                    <div className="pt-4">
-                        <Link href="/" className="text-purple-400 hover:text-purple-300">Go to Sign In</Link>
-                    </div>
-                </div>
-            </PageWrapper>
-        );
-    }
-
-    if (invite.expiresAt < new Date()) {
-        return (
-            <PageWrapper>
-                <div className="text-center space-y-4">
-                    <XCircle className="mx-auto h-12 w-12 text-red-500" />
-                    <h2 className="text-xl font-bold text-white">Invitation Expired</h2>
-                    <p className="text-sm text-neutral-400">This invite link has expired. Please contact a CTD Admin for a new one.</p>
+                    <h2 className="text-xl font-bold text-white">Invalid or expired trainer invite link.</h2>
+                    <p className="text-sm text-neutral-400">Please contact a CTD Admin for a new one.</p>
                     <div className="pt-4">
                         <Link href="/" className="text-purple-400 hover:text-purple-300">Return to Portal</Link>
                     </div>
@@ -94,7 +64,7 @@ export default async function InviteTrainerPage({ searchParams }: { searchParams
             <div className="space-y-3 mb-8 text-center">
                 <h2 className="text-2xl font-bold text-white tracking-tight">Complete Registration</h2>
                 <p className="text-neutral-400 text-sm leading-relaxed">
-                    You've been invited to join CTD as a Trainer.
+                    You&apos;ve been invited to join CTD as a Trainer.
                 </p>
             </div>
             <TrainerRegisterForm email={invite.email} token={token} organization={invite.organization} />

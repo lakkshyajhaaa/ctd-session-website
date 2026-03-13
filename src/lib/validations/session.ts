@@ -6,6 +6,7 @@ export const createSessionSchema = z.object({
   sessionType: z.enum(["ONLINE", "OFFLINE"]).default("ONLINE"),
   durationMinutes: z.number().min(1).max(480),
   sessionDate: z.string().datetime().or(z.date()),
+  trainerId: z.string().min(1, "Trainer is required"),
 });
 
 export const registerSessionSchema = z.object({

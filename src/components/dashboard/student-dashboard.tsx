@@ -113,7 +113,7 @@ export function StudentDashboard() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
         <Card className="col-span-1 bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm transition-all duration-150 hover:shadow-md">
           <CardHeader>
-            <CardTitle className="text-lg font-medium">Today's Session</CardTitle>
+            <CardTitle className="text-lg font-medium">Today&apos;s Session</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center justify-center py-6 text-center">

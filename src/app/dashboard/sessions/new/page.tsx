@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,25 @@ export default function NewSessionPage() {
   const [sessionType, setSessionType] = useState<"ONLINE" | "OFFLINE">("ONLINE");
   const [durationMinutes, setDurationMinutes] = useState(60);
   const [sessionDate, setSessionDate] = useState("");
+  const [trainerId, setTrainerId] = useState("");
+  const [trainers, setTrainers] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
+  useEffect(() => {
+    fetch("/api/admin/trainers")
+      .then((r) => r.json())
+      .then((data) => setTrainers(data.activeTrainers || []))
+      .catch((err) => console.error(err));
+  }, []);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!trainerId) {
+      toast({ title: "Validation Error", description: "Please select a trainer.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/sessions", {
@@ -30,7 +43,8 @@ export default function NewSessionPage() {
           topic,
           sessionType,
           durationMinutes,
-          sessionDate: new Date(sessionDate).toISOString(),
+          sessionDate: new Date(sessionDate || defaultDate).toISOString(),
+          trainerId,
         }),
       });
 
@@ -90,6 +104,21 @@ export default function NewSessionPage() {
                 onChange={(e) => setTopic(e.target.value)}
                 required
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="trainer">Trainer</Label>
+              <select
+                id="trainer"
+                value={trainerId}
+                onChange={(e) => setTrainerId(e.target.value)}
+                required
+                className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
+              >
+                <option value="">Select a Trainer</option>
+                {trainers.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
             </div>
             <div className="space-y-2">
               <Label>Session Type</Label>

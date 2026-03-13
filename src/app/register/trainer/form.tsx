@@ -13,22 +13,34 @@ interface TrainerRegisterFormProps {
     organization: string | null;
 }
 
-export default function TrainerRegisterForm({ email, token, organization }: TrainerRegisterFormProps) {
+export default function TrainerRegisterForm({ email, token, organization: initialOrganization }: TrainerRegisterFormProps) {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [organization, setOrganization] = useState(initialOrganization || "");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
 
     async function handleRegister(e: React.FormEvent) {
         e.preventDefault();
+
+        if (password !== confirmPassword) {
+            toast({
+                title: "Passwords do not match",
+                description: "Please ensure your passwords match before submitting.",
+                variant: "destructive",
+            });
+            return;
+        }
+
         setLoading(true);
 
         try {
             const res = await fetch("/api/auth/trainer-register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, password, token }),
+                body: JSON.stringify({ name, password, organization, token }),
             });
 
             const data = await res.json();
@@ -86,19 +98,18 @@ export default function TrainerRegisterForm({ email, token, organization }: Trai
                 />
             </div>
 
-            {organization && (
-                <div className="space-y-2">
-                    <Label htmlFor="org" className="text-sm font-medium text-neutral-300">Organization (Locked)</Label>
-                    <Input
-                        id="org"
-                        type="text"
-                        value={organization}
-                        readOnly
-                        disabled
-                        className="rounded-lg bg-neutral-900 border-neutral-800 text-neutral-500 h-[42px] cursor-not-allowed opacity-70"
-                    />
-                </div>
-            )}
+            <div className="space-y-2">
+                <Label htmlFor="org" className="text-sm font-medium text-neutral-300">Organization</Label>
+                <Input
+                    id="org"
+                    type="text"
+                    placeholder="Enter your organization"
+                    value={organization}
+                    onChange={(e) => setOrganization(e.target.value)}
+                    required
+                    className="rounded-lg bg-neutral-800/70 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-purple-500 focus:ring-purple-500 h-[42px]"
+                />
+            </div>
 
             <div className="space-y-2">
                 <Label htmlFor="name" className="text-sm font-medium text-neutral-300">Full Name</Label>
@@ -120,6 +131,19 @@ export default function TrainerRegisterForm({ email, token, organization }: Trai
                     placeholder="Min 8 chars, 1 upper"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="rounded-lg bg-neutral-800/70 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-purple-500 focus:ring-purple-500 h-[42px]"
+                />
+            </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-sm font-medium text-neutral-300">Confirm Password</Label>
+                <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Re-enter password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     className="rounded-lg bg-neutral-800/70 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-purple-500 focus:ring-purple-500 h-[42px]"
                 />

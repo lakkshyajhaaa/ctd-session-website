@@ -71,8 +71,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (session.user.role !== Role.TRAINER && session.user.role !== Role.ADMIN) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (session.user.role !== Role.ADMIN) {
+    return NextResponse.json({ error: "Forbidden. Only admins can create sessions." }, { status: 403 });
   }
 
   try {
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const newSession = await createSession(session.user.id, parsed.data);
+    const newSession = await createSession(parsed.data);
     return NextResponse.json(newSession, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to create session";
