@@ -1,4 +1,4 @@
-# Session Attendance - Class Management Platform
+# Integrated System for Monitoring Student Training and Engagement
 
 A production-ready web application for class/session management and attendance tracking with Trainer, Student, and Admin roles.
 
